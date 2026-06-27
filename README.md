@@ -2,12 +2,12 @@
 
 A simple collection of recipes.
 
-## Recipies
+## Recipes
 
 - Pasta Carbonara
 - Chicken Stir Fry
-- Chocolate Chip Cookeis
+- Chocolate Chip Cookies
 
-## Contibuting
+## Contributing
 
-Feel free to add your favorit recipes by opening a pull request.
+Feel free to add your favorite recipes by opening a pull request.
