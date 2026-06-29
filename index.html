@@ -375,12 +375,25 @@ const BOSSES=[
   {id:'hive',  name:'WAR CARRIER', col:'#ff8800',w:250,h:185,hp:85,spd:0.42,score:750,draw:drawBossHive},
   {id:'void',  name:'VOID NEXUS',  col:'#bb33ff',w:270,h:200,hp:120,spd:0.36,score:1200,draw:drawBossVoid},
 ];
+function mkEnemy(type,x,pat,extra){
+  const sm=1+diff*0.1;
+  return {...type,maxHp:type.hp,x,y:-type.h-((extra&&extra.dy)||0),spd:type.spd*sm,
+    shootRate:type.sRate/(1+diff*0.08),shootTimer:rnd(40,type.sRate),
+    bob:rnd(0,6.28),bobSpd:rnd(0.02,0.05),sway:rnd(0.3,1.1),
+    pat:pat||'strafe',t:0,hitFlash:0,isBoss:false,...(extra||{})};
+}
 function spawnEnemy(){
   if(bossActive)return;
-  const t=ETYPES[Math.floor(Math.random()*ETYPES.length)],sm=1+diff*0.1;
-  enemies.push({...t,maxHp:t.hp,x:rnd(t.w,W-t.w),y:-t.h,spd:t.spd*sm,
-    shootRate:t.sRate/(1+diff*0.08),shootTimer:rnd(40,t.sRate),
-    bob:rnd(0,6.28),bobSpd:rnd(0.02,0.05),sway:rnd(0.3,1.1),baseX:0,t:0,hitFlash:0,isBoss:false});
+  const t=ETYPES[Math.floor(Math.random()*ETYPES.length)];
+  // occasional V-formation dive of fighters
+  if(diff>=2&&Math.random()<0.18){
+    const cx=rnd(90,W-90),ft=ETYPES[0];
+    for(let i=-2;i<=2;i++)enemies.push(mkEnemy(ft,cx+i*38,'dive',{dy:Math.abs(i)*26}));
+    return;
+  }
+  const pats=['strafe','dive','zigzag','drift'];
+  const pat=t.id==='stealth'?'zigzag':t.id==='bomber'?'drift':pats[Math.floor(Math.random()*pats.length)];
+  enemies.push(mkEnemy(t,rnd(t.w,W-t.w),pat));
 }
 function spawnBoss(isMini){
   bossActive=true;bossWarn=200;sfx.bWarn();
@@ -813,8 +826,11 @@ function update(dt){
       else{e.swayT+=0.012*dt;e.x=e.homeX+Math.sin(e.swayT)*(W*0.30);e.y=ty+Math.sin(e.swayT*1.7)*10;}
       if(!e.phase&&e.hp<=e.maxHp*0.4){e.phase=1;flash=24;shake=14;burst(e.x,e.y,50,[e.col,'#fff','#ffcc00'],7,6);}
     } else {
-      e.bob+=e.bobSpd*dt;e.y+=e.spd*dt;
-      e.x+=Math.sin(e.bob)*e.sway*dt*(e.id==='stealth'?2.4:1);
+      e.bob+=e.bobSpd*dt;
+      if(e.pat==='dive'){e.y+=e.spd*1.7*dt;}
+      else if(e.pat==='zigzag'){e.y+=e.spd*0.9*dt;e.x+=Math.sin(e.bob)*e.sway*2.6*dt;}
+      else if(e.pat==='drift'){e.y+=e.spd*0.8*dt;e.x+=Math.sin(e.bob*0.5)*e.sway*0.6*dt;}
+      else{e.y+=e.spd*dt;e.x+=Math.sin(e.bob)*e.sway*dt;}
       e.x=Math.max(e.w/2,Math.min(W-e.w/2,e.x));
       if(e.y>H+70)return false;
     }
