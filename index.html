@@ -345,7 +345,40 @@ const sfx={
 /* ───────────── BACKGROUND ───────────── */
 const layers=[[],[],[]],layerSpd=[0.35,0.8,1.6],layerSz=[[0.4,1],[0.8,1.6],[1.4,2.4]],layerA=[0.35,0.6,1];
 for(let L=0;L<3;L++)for(let i=0;i<70;i++)layers[L].push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*(layerSz[L][1]-layerSz[L][0])+layerSz[L][0],tw:Math.random()*Math.PI*2});
-const nebula=[];for(let i=0;i<5;i++)nebula.push({x:Math.random()*W,y:Math.random()*H,r:120+Math.random()*140,c:['#1a0833','#081a33','#08331f','#33180a','#220a33'][i%5],vy:0.1+Math.random()*0.15});
+const nebula=[];for(let i=0;i<5;i++)nebula.push({x:Math.random()*W,y:Math.random()*H,r:120+Math.random()*140,c:['#2a0d4d','#0d2a4d','#0d4d33','#4d2810','#3a0d4d'][i%5],vy:0.1+Math.random()*0.15});
+const planets=[];
+const PLANET_C=[['#5a4aa8','#1a1040'],['#a85a4a','#3a1810'],['#3a8a6a','#10302a'],['#7a4a6a','#2a1028'],['#4a6aa8','#101a3a']];
+for(let i=0;i<2;i++){const c=PLANET_C[Math.floor(Math.random()*PLANET_C.length)];planets.push({x:Math.random()*W,y:Math.random()*H,r:38+Math.random()*52,c0:c[0],c1:c[1],vy:0.05+Math.random()*0.06,ring:Math.random()<0.5});}
+let shootStars=[],bgT=0;
+function paintSpace(){
+  bgT+=0.01;
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#070825');bg.addColorStop(0.5,'#0a0820');bg.addColorStop(1,'#040310');
+  ctx.fillStyle=bg;ctx.fillRect(-20,-20,W+40,H+40);
+  // distant galaxy glow
+  const sx=W*0.72,sy=H*0.16,sr=Math.min(W,H)*0.6;
+  const sg=ctx.createRadialGradient(sx,sy,0,sx,sy,sr);
+  sg.addColorStop(0,'rgba(120,70,170,0.32)');sg.addColorStop(0.4,'rgba(50,40,110,0.16)');sg.addColorStop(1,'transparent');
+  ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,sr,0,6.28);ctx.fill();
+  // nebula clouds
+  for(const n of nebula){const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);g.addColorStop(0,n.c);g.addColorStop(1,'transparent');ctx.globalAlpha=0.55;ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,6.28);ctx.fill();}
+  ctx.globalAlpha=1;
+  // planets
+  for(const p of planets){p.y+=p.vy;if(p.y-p.r>H){p.y=-p.r;p.x=Math.random()*W;}
+    if(p.ring){ctx.strokeStyle='rgba(190,170,230,0.22)';ctx.lineWidth=p.r*0.12;ctx.save();ctx.translate(p.x,p.y);ctx.scale(1,0.34);ctx.beginPath();ctx.arc(0,0,p.r*1.55,0,6.28);ctx.stroke();ctx.restore();}
+    const g=ctx.createRadialGradient(p.x-p.r*0.35,p.y-p.r*0.35,p.r*0.1,p.x,p.y,p.r);
+    g.addColorStop(0,p.c0);g.addColorStop(1,p.c1);
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.28);ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,0.32)';ctx.beginPath();ctx.arc(p.x+p.r*0.4,p.y,p.r,0,6.28);ctx.fill();
+  }
+  // parallax stars
+  for(let L=0;L<3;L++)for(const s of layers[L]){const tw=0.55+Math.sin(s.tw)*0.45;ctx.fillStyle=`rgba(212,224,255,${layerA[L]*tw})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.28);ctx.fill();}
+  // shooting stars
+  if(Math.random()<0.014)shootStars.push({x:Math.random()*W,y:Math.random()*H*0.4,vx:rnd(-9,-4),vy:rnd(3,6),life:1});
+  shootStars=shootStars.filter(s=>{s.x+=s.vx;s.y+=s.vy;s.life-=0.02;
+    ctx.globalAlpha=Math.max(0,s.life);ctx.strokeStyle='#d6e4ff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*3,s.y-s.vy*3);ctx.stroke();ctx.globalAlpha=1;
+    return s.life>0&&s.x>-50&&s.y<H+50;});
+}
 
 /* ───────────── STATE ───────────── */
 let state='title',score=0,combo=0,comboTimer=0;
@@ -548,8 +581,24 @@ function collectLoot(L){
   sfxLoot(L.rarity);
 }
 let musicTimer=null,musicStep=0;
-const MSEQ=[0,3,7,10,12,10,7,3,5,8,12,8];
-function startMusic(){if(musicTimer)return;musicTimer=setInterval(()=>{if(VIEW!=='game'||state!=='playing')return;const b=110,n=MSEQ[musicStep%MSEQ.length];tone(b*Math.pow(2,n/12),'triangle',0.2,0.045);if(musicStep%4===0)tone(b/2,'sine',0.3,0.04);musicStep++;},200);}
+const MBASS=[0,0,-2,-2,-4,-4,-5,-5];
+const MARP=[0,7,12,16,19,16,12,7,-2,5,10,14,17,14,10,5];
+function startMusic(){
+  if(musicTimer)return;
+  musicTimer=setInterval(()=>{
+    if(VIEW!=='game'||state!=='playing'){musicStep++;return;}
+    const intense=bossActive, root=55;
+    const bs=MBASS[Math.floor(musicStep/2)%MBASS.length];
+    tone(root*Math.pow(2,bs/12),'sawtooth',0.18,0.05);                 // bass
+    if(musicStep%2===0)tone(root*Math.pow(2,bs/12)*2,'triangle',0.16,0.03);
+    const an=MARP[musicStep%MARP.length];
+    tone(root*4*Math.pow(2,an/12),'square',0.11,intense?0.045:0.03);   // arp lead
+    if(musicStep%4===0)tone(60,'sine',0.14,0.13,0,30);                 // kick
+    if(musicStep%2===1)noise(0.03,intense?0.05:0.03);                  // hat
+    if(intense&&musicStep%8===0)tone(root*2*Math.pow(2,bs/12),'sawtooth',0.45,0.05); // boss drone
+    musicStep++;
+  },150);
+}
 
 /* ───────────── STAGE / WAVE PROGRESSION ───────────── */
 const STAGE_FRAMES=14*60;            // ~14s per normal sub-stage
@@ -981,7 +1030,7 @@ function update(dt){
         const pts=Math.round(e.score*(1+combo*0.1));score+=pts;
         burst(e.x,e.y,e.isBoss?55:18,[e.col,'#fff','#ffcc00','#ff8800'],e.isBoss?8:4,e.isBoss?7:4);
         ring(e.x,e.y,e.col);
-        if(e.isBoss){bossActive=false;for(let i=0;i<4;i++)spawnPU(e.x+rnd(-80,80),e.y+rnd(-40,40),true);dropBossItem(e.x,e.y);}
+        if(e.isBoss){flash=42;shake=26;for(let i=0;i<6;i++)parts.push({ring:true,x:e.x,y:e.y,r:4+i*15,life:1,dec:0.02,col:i%2?'#fff':e.col});burst(e.x,e.y,80,[e.col,'#fff','#ffd','#ffae3c'],10,8);bossActive=false;for(let i=0;i<4;i++)spawnPU(e.x+rnd(-80,80),e.y+rnd(-40,40),true);dropBossItem(e.x,e.y);}
         else spawnPU(e.x,e.y);
       }};
     bullets=bullets.filter(b=>{if(hit(b.x,b.y,b.w,b.h,e.x,e.y,e.w*0.85,e.h*0.85)){dmg(b.dmg||1,b.x,b.y);if(b.pierce>0){b.pierce--;return true;}return false;}return true;});
@@ -1038,11 +1087,7 @@ function update(dt){
 function draw(){
   ctx.save();
   if(shake>0){ctx.translate(rnd(-shake,shake)*0.4,rnd(-shake,shake)*0.4);}
-  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#05060f');bg.addColorStop(0.6,'#070414');bg.addColorStop(1,'#03020a');
-  ctx.fillStyle=bg;ctx.fillRect(-20,-20,W+40,H+40);
-  for(const n of nebula){const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);g.addColorStop(0,n.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.globalAlpha=0.5;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,6.28);ctx.fill();}
-  ctx.globalAlpha=1;
-  for(let L=0;L<3;L++)for(const s of layers[L]){const tw=0.6+Math.sin(s.tw)*0.4;ctx.fillStyle=`rgba(200,215,255,${layerA[L]*tw})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.28);ctx.fill();}
+  paintSpace();
 
   if(state==='title'){drawTitle();ctx.restore();return;}
   if(state==='gameover'){drawGameover();ctx.restore();return;}
@@ -1198,11 +1243,7 @@ function homeDraw(dt){
   homeT+=0.012*dt;
   for(const n of nebula){n.y+=n.vy*dt;if(n.y-n.r>H)n.y=-n.r;}
   for(let L=0;L<3;L++)for(const s of layers[L]){s.y+=layerSpd[L]*dt;s.tw+=0.05*dt;if(s.y>H){s.y=0;s.x=Math.random()*W;}}
-  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#05060f');bg.addColorStop(0.6,'#070414');bg.addColorStop(1,'#03020a');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  for(const n of nebula){const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);g.addColorStop(0,n.c);g.addColorStop(1,'transparent');ctx.globalAlpha=0.5;ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,6.28);ctx.fill();}
-  ctx.globalAlpha=1;
-  for(let L=0;L<3;L++)for(const s of layers[L]){const tw=0.6+Math.sin(s.tw)*0.4;ctx.fillStyle=`rgba(200,215,255,${layerA[L]*tw})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.28);ctx.fill();}
+  paintSpace();
   const cx=W/2,cy=H*0.30;
   const x=cx+Math.sin(homeT*1.1)*W*0.26, y=cy+Math.sin(homeT*1.9+1)*H*0.06;
   const bank=Math.cos(homeT*1.1)*16;
