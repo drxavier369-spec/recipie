@@ -767,14 +767,18 @@ function fire(){
   const gunL=player.x-15,gunR=player.x+15,gy=player.y-22;
   const dm=LO?LO.dmgMul:1, w=LO?LO.weapon:'twin';
   const mk=(x,vx,col,h,pierce,d)=>bullets.push({x,y:gy,w:5,h:h||16,vx:vx||0,vy:-17,col,pierce:pierce||0,dmg:(d||1)*dm});
-  if(homing){shootCd=rapid?6:13;sfx.homing();[gunL,gunR].forEach(gx=>missiles.push({x:gx,y:gy,vx:0,vy:-7,ang:-Math.PI/2,t:0,dmg:2*dm}));if(triple)missiles.push({x:player.x,y:gy-4,vx:0,vy:-7,ang:-Math.PI/2,t:0,dmg:2*dm});return;}
-  if(rapid){shootCd=6;sfx.rapid();mk(gunL,0,'#ffd84d');mk(gunR,0,'#ffd84d');if(triple){mk(player.x,0,'#ff7bd5');mk(gunL,-2.6,'#ff7bd5');mk(gunR,2.6,'#ff7bd5');}burst(gunL,gy,2,['#fff','#aef']);return;}
-  if(w==='spread'){shootCd=15;sfx.triple();mk(gunL,0,'#5cf0ff');mk(gunR,0,'#5cf0ff');mk(player.x,-3,'#5cf0ff');mk(player.x,3,'#5cf0ff');mk(player.x,0,'#5cf0ff');}
-  else if(w==='homer'){shootCd=16;sfx.homing();[gunL,gunR].forEach(gx=>missiles.push({x:gx,y:gy,vx:0,vy:-7,ang:-Math.PI/2,t:0,dmg:2*dm}));}
-  else if(w==='rail'){shootCd=20;sfx.shoot();mk(player.x,0,'#caa6ff',26,3,3);}
-  else if(w==='plasma'){shootCd=6;sfx.rapid();mk(player.x,0,'#b15cff',18,1,0.9);}
-  else{shootCd=13;sfx.shoot();mk(gunL,0,'#5cf0ff');mk(gunR,0,'#5cf0ff');}
-  if(triple&&w!=='spread'){mk(player.x,0,'#ff7bd5');mk(gunL,-2.6,'#ff7bd5');mk(gunR,2.6,'#ff7bd5');}
+  const tint=rapid?'#ffd84d':null;          // rapid gives a gold tint, never changes the weapon
+  let baseCd;
+  // ── base pattern from the EQUIPPED weapon (always) ──
+  if(w==='spread'){baseCd=15;sfx.triple();mk(gunL,0,tint||'#5cf0ff');mk(gunR,0,tint||'#5cf0ff');mk(player.x,-3,tint||'#5cf0ff');mk(player.x,3,tint||'#5cf0ff');mk(player.x,0,tint||'#5cf0ff');}
+  else if(w==='rail'){baseCd=20;sfx.shoot();mk(player.x,0,tint||'#caa6ff',26,3,3);}
+  else if(w==='plasma'){baseCd=6;sfx.rapid();mk(player.x,0,tint||'#b15cff',18,1,0.9);}
+  else if(w==='homer'){baseCd=16;sfx.homing();[gunL,gunR].forEach(gx=>missiles.push({x:gx,y:gy,vx:0,vy:-7,ang:-Math.PI/2,t:0,dmg:2*dm}));}
+  else{baseCd=13;sfx.shoot();mk(gunL,0,tint||'#5cf0ff');mk(gunR,0,tint||'#5cf0ff');}
+  // ── power-ups ENHANCE on top, never replace ──
+  if(triple&&w!=='spread'){mk(gunL,-2.7,'#ff7bd5');mk(gunR,2.7,'#ff7bd5');if(w!=='rail'&&w!=='plasma')mk(player.x,0,'#ff7bd5');}
+  if(homing){missiles.push({x:gunL,y:gy,vx:0,vy:-7,ang:-Math.PI/2,t:0,dmg:2*dm});missiles.push({x:gunR,y:gy,vx:0,vy:-7,ang:-Math.PI/2,t:0,dmg:2*dm});}
+  shootCd=rapid?Math.max(4,baseCd*0.45):baseCd;   // rapid = faster, same weapon
   burst(gunL,gy,2,['#fff','#aef']);burst(gunR,gy,2,['#fff','#aef']);
 }
 
