@@ -386,7 +386,7 @@ let lives,player,keys={},shootCd=0,shake=0,flash=0,titleT=0;
 let diff,diffTimer,spawnTimer,spawnRate,bossActive,bossWarn,waveBanner=0;
 let tier,stageMode,stageTimer;   // decimal stage system (1.1, 1.2 … 2.0 …)
 let bullets,enemies,eBullets,powerups,parts,missiles,drones,loot;
-let hitStop=0,regenT=0,LO=null,itemReveal=null,MUTED=!!P.muted,paused=false,revivedRun=false;
+let hitStop=0,regenT=0,LO=null,itemReveal=null,MUTED=!!P.muted,paused=false,revivedRun=false,adPlaying=false,pausedByBlur=false;
 const RCOL={common:'#9aa4b2',uncommon:'#3fc46b',rare:'#3f8cff',epic:'#b15cff',legendary:'#ffb43f',mythical:'#ff5c8a',cosmic:'#7df9ff'};
 function pkSDK(){return window.PokiSDK;}
 function pkStart(){try{const s=pkSDK();s&&s.gameplayStart&&s.gameplayStart();}catch(e){}}
@@ -394,9 +394,9 @@ function pkStop(){try{const s=pkSDK();s&&s.gameplayStop&&s.gameplayStop();}catch
 function pkAd(cb){
   try{const s=pkSDK();
     if(s&&s.commercialBreak){
-      const wasMuted=MUTED;                       // silence game audio for the ad
-      MUTED=true;try{AC.suspend&&AC.suspend();}catch(e){}
-      const restore=()=>{MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}cb();};
+      const wasMuted=MUTED;                       // silence audio + lock input for the ad
+      MUTED=true;adPlaying=true;keys={};try{AC.suspend&&AC.suspend();}catch(e){}
+      const restore=()=>{adPlaying=false;MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}cb();};
       s.commercialBreak(()=>{MUTED=true;}).then(restore,restore);
       return;
     }
@@ -406,8 +406,8 @@ function pkAd(cb){
 function pkReward(onSuccess,onFail){
   try{const s=pkSDK();
     if(s&&s.rewardedBreak){
-      const wasMuted=MUTED;MUTED=true;try{AC.suspend&&AC.suspend();}catch(e){}
-      const done=()=>{MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}};
+      const wasMuted=MUTED;MUTED=true;adPlaying=true;keys={};try{AC.suspend&&AC.suspend();}catch(e){}
+      const done=()=>{adPlaying=false;MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}};
       s.rewardedBreak(()=>{MUTED=true;}).then(()=>{done();onSuccess();},()=>{done();onFail();});
       return;
     }
@@ -427,6 +427,7 @@ let pwTriple=0,pwRapid=0,pwHoming=0,shield=false;
 /* ───────────── INPUT ───────────── */
 addEventListener('keydown',e=>{
   if(['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();
+  if(adPlaying){keys={};return;}              // hard input lock while an ad plays
   if(AC.state==='suspended')AC.resume();
   if(VIEW!=='game')return; // home screen handles its own input
   if(entry.active){handleEntryKey(e);return;}
@@ -438,17 +439,27 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>{keys[e.code]=false;});
 
+/* Poki: mute audio when the tab/window loses focus; pause so the player can't move or die in the background */
+function audioBlur(){try{AC.suspend&&AC.suspend();}catch(e){}}
+function audioFocus(){if(!MUTED&&!adPlaying){try{AC.resume&&AC.resume();}catch(e){}}}
+addEventListener('blur',audioBlur);
+addEventListener('focus',audioFocus);
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){audioBlur();keys={};if(VIEW==='game'&&state==='playing'&&!paused&&!adPlaying){paused=true;pausedByBlur=true;}}
+  else{audioFocus();if(pausedByBlur){paused=false;pausedByBlur=false;}}
+});
+
 /* touch: drag to fly, auto-fire */
 let touchTarget=null;
 function canvasPos(t){const r=C.getBoundingClientRect();return{x:(t.clientX-r.left)/r.width*W,y:(t.clientY-r.top)/r.height*H};}
 function onTouchStart(e){
-  e.preventDefault();if(AC.state==='suspended')AC.resume();
+  e.preventDefault();if(adPlaying)return;if(AC.state==='suspended')AC.resume();
   if(VIEW!=='game')return; // home screen handles its own input
   if(state==='gameover'){goHome();return;}
   if(state==='dead'){respawn();return;}
   if(state==='playing'&&e.touches[0]){const p=canvasPos(e.touches[0]);touchTarget={x:p.x,y:p.y};}
 }
-function onTouchMove(e){e.preventDefault();if(state==='playing'&&e.touches[0]){const p=canvasPos(e.touches[0]);touchTarget={x:p.x,y:p.y};}}
+function onTouchMove(e){e.preventDefault();if(adPlaying)return;if(state==='playing'&&e.touches[0]){const p=canvasPos(e.touches[0]);touchTarget={x:p.x,y:p.y};}}
 function onTouchEnd(e){e.preventDefault();if(e.touches.length===0)touchTarget=null;}
 C.addEventListener('touchstart',onTouchStart,{passive:false});
 C.addEventListener('touchmove',onTouchMove,{passive:false});
@@ -1379,7 +1390,7 @@ $('#pmMute').onclick=()=>setMute(!MUTED);
 $('#pauseBtn').onclick=()=>togglePause(true);
 $('#resumeBtn').onclick=()=>togglePause(false);
 $('#quitBtn').onclick=()=>{togglePause(false);goHome();};
-addEventListener('keydown',e=>{if(VIEW==='game'&&(e.code==='Escape'||e.code==='KeyP'))togglePause(!paused);});
+addEventListener('keydown',e=>{if(!adPlaying&&VIEW==='game'&&(e.code==='Escape'||e.code==='KeyP'))togglePause(!paused);});
 setMute(MUTED);
 if(!P.seenTut)$('#tutorial').classList.remove('hidden');
 $('#tutClose').onclick=()=>{$('#tutorial').classList.add('hidden');P.seenTut=true;persist();};
