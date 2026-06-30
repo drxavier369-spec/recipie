@@ -516,7 +516,7 @@ function spawnBoss(isMini){
   const world=Math.floor(tier/10);
   const b=BOSSES[(Math.floor(tier/5))%BOSSES.length];
   const s=isMini?0.6:1, worldMul=1+world*0.35;
-  const hp=Math.round(b.hp*worldMul*(isMini?0.5:1));
+  const hp=Math.round(b.hp*5*worldMul*(isMini?0.5:1));
   enemies.push({...b,bossName:b.name,isMini:!!isMini,s,
     w:b.w*s,h:b.h*s,maxHp:hp,hp,
     score:Math.round(b.score*worldMul*(isMini?0.5:1)),
