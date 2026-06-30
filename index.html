@@ -455,27 +455,31 @@ function pkSDK(){return window.PokiSDK;}
 function pkStart(){try{const s=pkSDK();s&&s.gameplayStart&&s.gameplayStart();}catch(e){}}
 function pkStop(){try{const s=pkSDK();s&&s.gameplayStop&&s.gameplayStop();}catch(e){}}
 function pkAd(cb){
+  let fired=false;const fire=()=>{if(fired)return;fired=true;cb();};
   try{const s=pkSDK();
     if(s&&s.commercialBreak){
       const wasMuted=MUTED;                       // silence audio + lock input for the ad
       MUTED=true;adPlaying=true;keys={};try{AC.suspend&&AC.suspend();}catch(e){}
-      const restore=()=>{adPlaying=false;MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}cb();};
+      const restore=()=>{adPlaying=false;MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}fire();};
       s.commercialBreak(()=>{MUTED=true;}).then(restore,restore);
+      setTimeout(restore,8000);                   // never let a stuck ad freeze the game
       return;
     }
   }catch(e){}
-  cb();
+  fire();
 }
 function pkReward(onSuccess,onFail){
+  let fired=false;const fire=(fn)=>{if(fired)return;fired=true;fn();};
   try{const s=pkSDK();
     if(s&&s.rewardedBreak){
       const wasMuted=MUTED;MUTED=true;adPlaying=true;keys={};try{AC.suspend&&AC.suspend();}catch(e){}
       const done=()=>{adPlaying=false;MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}};
-      s.rewardedBreak(()=>{MUTED=true;}).then(()=>{done();onSuccess();},()=>{done();onFail();});
+      s.rewardedBreak(()=>{MUTED=true;}).then(()=>{done();fire(onSuccess);},()=>{done();fire(onFail);});
+      setTimeout(()=>{done();fire(onFail);},8000); // ad stuck → end run so the death/leaderboard screen shows
       return;
     }
   }catch(e){}
-  onSuccess(); // no SDK (local/demo) → grant the revive
+  fire(onSuccess); // no SDK (local/demo) → grant the revive
 }
 function doRevive(){lives=2;eBullets.length=0;player.inv=200;revivedRun=true;paused=false;pkStart();}
 function endRun(){paused=false;sfx.over();flash=30;doGameOver();}
