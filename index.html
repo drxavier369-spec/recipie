@@ -449,7 +449,7 @@ let lives,player,keys={},shootCd=0,shake=0,flash=0,titleT=0;
 let diff,diffTimer,spawnTimer,spawnRate,bossActive,bossWarn,waveBanner=0;
 let tier,stageMode,stageTimer;   // decimal stage system (1.1, 1.2 … 2.0 …)
 let bullets,enemies,eBullets,powerups,parts,missiles,drones,loot;
-let hitStop=0,regenT=0,LO=null,itemReveal=null,MUTED=!!P.muted,paused=false,revivedRun=false,adPlaying=false,pausedByBlur=false;
+let hitStop=0,regenT=0,LO=null,itemReveal=null,MUTED=!!P.muted,paused=false,revivedRun=false,adPlaying=false,pausedByBlur=false,nova=0;
 const RCOL={common:'#9aa4b2',uncommon:'#3fc46b',rare:'#3f8cff',epic:'#b15cff',legendary:'#ffb43f',mythical:'#ff5c8a',cosmic:'#7df9ff'};
 function pkSDK(){return window.PokiSDK;}
 function pkStart(){try{const s=pkSDK();s&&s.gameplayStart&&s.gameplayStart();}catch(e){}}
@@ -484,6 +484,28 @@ function pkReward(onSuccess,onFail){
 function doRevive(){lives=2;eBullets.length=0;player.inv=200;revivedRun=true;paused=false;pkStart();}
 function endRun(){paused=false;sfx.over();flash=30;doGameOver();}
 window.doRevive=doRevive;window.endRun=endRun;
+function killEnemy(e){
+  e.isBoss?sfx.bossBoom():sfx.explode();
+  shake=Math.max(shake,e.isBoss?20:6);hitStop=Math.max(hitStop,e.isBoss?7:2);
+  runStats.kills++;if(e.isBoss)runStats.bosses++;
+  combo++;comboTimer=120;nova=Math.min(100,nova+(e.isBoss?28:6));
+  score+=Math.round(e.score*(1+combo*0.1));
+  burst(e.x,e.y,e.isBoss?80:18,[e.col,'#fff','#ffcc00','#ff8800'],e.isBoss?10:4,e.isBoss?8:4);
+  ring(e.x,e.y,e.col);
+  if(e.isBoss){flash=42;for(let i=0;i<6;i++)parts.push({ring:true,x:e.x,y:e.y,r:4+i*15,life:1,dec:0.02,col:i%2?'#fff':e.col});bossActive=false;for(let i=0;i<4;i++)spawnPU(e.x+rnd(-80,80),e.y+rnd(-40,40),true);dropBossItem(e.x,e.y);}
+  else spawnPU(e.x,e.y);
+}
+function fireNova(){
+  if(nova<100||state!=='playing'||paused)return;
+  nova=0;if(sfx.bossBoom)sfx.bossBoom();flash=48;shake=24;hitStop=6;
+  for(let i=0;i<4;i++)parts.push({ring:true,x:player.x,y:player.y,r:12+i*22,life:1,dec:0.011,col:i%2?'#fff':'#5cf0ff'});
+  eBullets.length=0;
+  enemies=enemies.filter(e=>{
+    if(e.isBoss){e.hp-=45;e.hitFlash=5;burst(e.x,e.y,14,['#fff','#5cf0ff'],6);if(e.hp<=0){killEnemy(e);return false;}return true;}
+    killEnemy(e);return false;
+  });
+}
+window.fireNova=fireNova;
 try{const s=window.PokiSDK;if(s&&s.init){s.init().then(()=>{},()=>{});}}catch(e){}
 let board=P.board;
 let entry={active:false,name:'',rank:0};
@@ -499,6 +521,7 @@ addEventListener('keydown',e=>{
   if(VIEW!=='game')return; // home screen handles its own input
   if(entry.active){handleEntryKey(e);return;}
   keys[e.code]=true;
+  if(e.code==='ShiftLeft'||e.code==='ShiftRight'||e.code==='KeyV')fireNova();
   if(e.code==='Space'){
     if(state==='gameover'){goHome();}
     else if(state==='dead'){respawn();}
@@ -524,7 +547,9 @@ function onTouchStart(e){
   if(VIEW!=='game')return; // home screen handles its own input
   if(state==='gameover'){goHome();return;}
   if(state==='dead'){respawn();return;}
-  if(state==='playing'&&e.touches[0]){const p=canvasPos(e.touches[0]);touchTarget={x:p.x,y:p.y};}
+  if(state==='playing'&&e.touches[0]){const p=canvasPos(e.touches[0]);
+    if(nova>=100&&Math.hypot(p.x-44,p.y-(H-46))<36){fireNova();return;}
+    touchTarget={x:p.x,y:p.y};}
 }
 function onTouchMove(e){e.preventDefault();if(adPlaying)return;if(state==='playing'&&e.touches[0]){const p=canvasPos(e.touches[0]);touchTarget={x:p.x,y:p.y};}}
 function onTouchEnd(e){e.preventDefault();if(e.touches.length===0)touchTarget=null;}
@@ -549,7 +574,7 @@ function start(){
   buildLoadout();lives=LO.maxLives;
   tier=11;diff=1;stageMode='fight';stageTimer=0;
   spawnTimer=0;spawnRate=110;bossActive=false;bossWarn=0;waveBanner=0;
-  pwTriple=pwRapid=pwHoming=0;shield=LO.startShield;regenT=0;itemReveal=null;hitStop=0;revivedRun=false;
+  pwTriple=pwRapid=pwHoming=0;shield=LO.startShield;regenT=0;itemReveal=null;hitStop=0;revivedRun=false;nova=0;
   player=mkPlayer();
   bullets=[];enemies=[];eBullets=[];powerups=[];parts=[];missiles=[];loot=[];drones=buildDrones();
   shootCd=0;shake=0;flash=0;
@@ -685,7 +710,7 @@ function enterStage(){
   diff=tier-10;stageTimer=0;P.stage=stageLabel();
   if(tier%10===0){stageMode='boss';spawnBoss(false);}    // X.0 → full boss
   else if(tier%5===0){stageMode='boss';spawnBoss(true);}  // X.5 → mini-boss
-  else{stageMode='fight';spawnRate=Math.max(45,120-diff*6);waveBanner=100;flash=14;}
+  else{stageMode='fight';spawnRate=Math.max(26,84-diff*6);waveBanner=100;flash=14;}
 }
 function nextStage(){tier++;enterStage();}
 
@@ -1009,7 +1034,7 @@ function update(dt){
   else if(!bossActive){nextStage();}
 
   if(!bossActive){spawnTimer-=dt;if(spawnTimer<=0){spawnTimer=spawnRate+rnd(-15,15);spawnEnemy();
-    if(diff>=3&&Math.random()<0.4)spawnEnemy();if(diff>=7&&Math.random()<0.3)spawnEnemy();}}
+    if(diff>=2&&Math.random()<0.55)spawnEnemy();if(diff>=5&&Math.random()<0.45)spawnEnemy();if(diff>=9&&Math.random()<0.4)spawnEnemy();}}
 
   /* player */
   if(player.inv>0)player.inv-=dt;
@@ -1099,18 +1124,7 @@ function update(dt){
       }
     }
     /* take damage from bullets */
-    const dmg=(amt,hx,hy)=>{e.hp-=amt;e.hitFlash=4;burst(hx,hy,6,['#fff','#9ef','#cff']);
-      if(e.hp<=0){
-        e.isBoss?sfx.bossBoom():sfx.explode();
-        shake=e.isBoss?20:6;hitStop=e.isBoss?7:2;
-        runStats.kills++; if(e.isBoss)runStats.bosses++;
-        combo++;comboTimer=120;
-        const pts=Math.round(e.score*(1+combo*0.1));score+=pts;
-        burst(e.x,e.y,e.isBoss?55:18,[e.col,'#fff','#ffcc00','#ff8800'],e.isBoss?8:4,e.isBoss?7:4);
-        ring(e.x,e.y,e.col);
-        if(e.isBoss){flash=42;shake=26;for(let i=0;i<6;i++)parts.push({ring:true,x:e.x,y:e.y,r:4+i*15,life:1,dec:0.02,col:i%2?'#fff':e.col});burst(e.x,e.y,80,[e.col,'#fff','#ffd','#ffae3c'],10,8);bossActive=false;for(let i=0;i<4;i++)spawnPU(e.x+rnd(-80,80),e.y+rnd(-40,40),true);dropBossItem(e.x,e.y);}
-        else spawnPU(e.x,e.y);
-      }};
+    const dmg=(amt,hx,hy)=>{e.hp-=amt;e.hitFlash=4;burst(hx,hy,6,['#fff','#9ef','#cff']);if(e.hp<=0)killEnemy(e);};
     bullets=bullets.filter(b=>{if(hit(b.x,b.y,b.w,b.h,e.x,e.y,e.w*0.85,e.h*0.85)){dmg(b.dmg||1,b.x,b.y);if(b.pierce>0){b.pierce--;return true;}return false;}return true;});
     missiles=missiles.filter(m=>{if(hit(m.x,m.y,10,10,e.x,e.y,e.w*0.85,e.h*0.85)){dmg(m.dmg||2,m.x,m.y);burst(m.x,m.y,12,['#ffaa33','#fff'],5);return false;}return true;});
     return e.hp>0;
@@ -1253,6 +1267,13 @@ function drawHUD(){
   if(pwBar(bx,'HOMING','#ff8833',pwHoming))bx+=124;
   if(shield){ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(W-128,H-26,118,18);ctx.fillStyle='#00ffcc';ctx.font='bold 11px Consolas,monospace';ctx.textAlign='center';ctx.fillText('⛨ SHIELD',W-69,H-13);}
   ctx.fillStyle='rgba(150,170,255,0.5)';ctx.font='11px Consolas,monospace';ctx.textAlign='center';ctx.fillText('STAGE '+stageLabel(),W/2,H-12);
+  // NOVA charge button (bottom-left)
+  const nbx=44,nby=H-46,nbr=28,ready=nova>=100;
+  ctx.fillStyle='rgba(0,0,0,0.45)';ctx.beginPath();ctx.arc(nbx,nby,nbr+4,0,6.28);ctx.fill();
+  if(ready){const pul=0.5+Math.sin(now/110)*0.5;ctx.fillStyle='rgba(92,240,255,'+(0.14+pul*0.22)+')';ctx.beginPath();ctx.arc(nbx,nby,nbr,0,6.28);ctx.fill();}
+  ctx.strokeStyle='#222d5c';ctx.lineWidth=5;ctx.beginPath();ctx.arc(nbx,nby,nbr,0,6.28);ctx.stroke();
+  ctx.strokeStyle=ready?'#5cf0ff':'#3f7bd8';ctx.lineWidth=5;ctx.beginPath();ctx.arc(nbx,nby,nbr,-Math.PI/2,-Math.PI/2+6.2832*(nova/100));ctx.stroke();
+  ctx.fillStyle=ready?'#bff4ff':'#7585b0';ctx.font='bold 12px Consolas,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('NOVA',nbx,nby);ctx.textBaseline='alphabetic';
 }
 
 function drawTitle(){
