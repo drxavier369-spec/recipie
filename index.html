@@ -339,7 +339,18 @@ const RCOL={common:'#9aa4b2',uncommon:'#3fc46b',rare:'#3f8cff',epic:'#b15cff',le
 function pkSDK(){return window.PokiSDK;}
 function pkStart(){try{const s=pkSDK();s&&s.gameplayStart&&s.gameplayStart();}catch(e){}}
 function pkStop(){try{const s=pkSDK();s&&s.gameplayStop&&s.gameplayStop();}catch(e){}}
-function pkAd(cb){try{const s=pkSDK();if(s&&s.commercialBreak){s.commercialBreak().then(cb,cb);return;}}catch(e){}cb();}
+function pkAd(cb){
+  try{const s=pkSDK();
+    if(s&&s.commercialBreak){
+      const wasMuted=MUTED;                       // silence game audio for the ad
+      MUTED=true;try{AC.suspend&&AC.suspend();}catch(e){}
+      const restore=()=>{MUTED=wasMuted;try{if(!wasMuted)AC.resume&&AC.resume();}catch(e){}cb();};
+      s.commercialBreak(()=>{MUTED=true;}).then(restore,restore);
+      return;
+    }
+  }catch(e){}
+  cb();
+}
 try{const s=window.PokiSDK;if(s&&s.init){s.init().then(()=>{s.gameLoadingFinished&&s.gameLoadingFinished();},()=>{});}}catch(e){}
 let board=P.board;
 let entry={active:false,name:'',rank:0};
