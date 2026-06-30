@@ -7,8 +7,6 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<link rel="manifest" href="manifest.json"/>
-<link rel="apple-touch-icon" href="icon.svg"/>
 <script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
 <title>NOVA STRIKE</title>
 <style>
@@ -19,6 +17,7 @@ canvas{display:block;touch-action:none;box-shadow:0 0 80px #2244ff44,0 0 160px #
 </style>
 </head>
 <body>
+<div id="loader"><div class="ldr"><div class="ldrTitle">NOVA STRIKE</div><div class="ldrBar"><div id="ldrFill"></div></div><div class="ldrTip">Loading…</div></div></div>
 <canvas id="c"></canvas>
 
 <style>
@@ -142,6 +141,13 @@ canvas{display:block;touch-action:none;box-shadow:0 0 80px #2244ff44,0 0 160px #
 .pmbtn{display:block;width:100%;margin:9px 0 0;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--card2);color:#fff;font-size:15px;font-weight:700;cursor:pointer;}
 .pmbtn.primary{background:linear-gradient(135deg,#ff7b3c,#ff3b6a);border:none;}
 .pmbtn:active{transform:scale(.97);}
+/* loading screen */
+#loader{position:fixed;inset:0;z-index:100;background:#05060f;display:flex;align-items:center;justify-content:center;}
+.ldr{text-align:center;}
+.ldrTitle{font-size:34px;font-weight:800;color:#fff;letter-spacing:3px;font-family:Consolas,monospace;text-shadow:0 0 24px #3fd8ff88;}
+.ldrBar{width:220px;height:8px;background:#101736;border-radius:99px;margin:18px auto 8px;overflow:hidden;}
+#ldrFill{height:100%;width:6%;background:linear-gradient(90deg,#3fd8ff,#b15cff);transition:width .6s ease;}
+.ldrTip{font-size:12px;color:#8c9ad0;letter-spacing:1px;}
 </style>
 
 <div id="homeView">
@@ -222,6 +228,13 @@ canvas{display:block;touch-action:none;box-shadow:0 0 80px #2244ff44,0 0 160px #
   <p>⭐ Grab power-ups; beat bosses for loot</p>
   <p>🛡️ Equip gear in <b>Items</b> to grow stronger</p>
   <button id="tutClose" class="pmbtn primary">Got it!</button>
+</div></div>
+<div id="nameModal" class="hidden"><div class="pm">
+  <h2>NEW HIGH SCORE!</h2>
+  <div id="nmScore" style="font-size:15px;color:var(--mut);margin-bottom:12px;"></div>
+  <input id="nmInput" maxlength="10" placeholder="CALLSIGN" autocomplete="off" autocapitalize="characters"
+    style="width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:#fff;font-size:18px;text-align:center;letter-spacing:2px;text-transform:uppercase;outline:none;"/>
+  <button id="nmSave" class="pmbtn primary" style="margin-top:14px;">Save Score</button>
 </div></div>
 
 <script>
@@ -351,7 +364,7 @@ function pkAd(cb){
   }catch(e){}
   cb();
 }
-try{const s=window.PokiSDK;if(s&&s.init){s.init().then(()=>{s.gameLoadingFinished&&s.gameLoadingFinished();},()=>{});}}catch(e){}
+try{const s=window.PokiSDK;if(s&&s.init){s.init().then(()=>{},()=>{});}}catch(e){}
 let board=P.board;
 let entry={active:false,name:'',rank:0};
 
@@ -824,10 +837,8 @@ function submitEntry(){saveScore(entry.name);entry.active=false;state='gameover'
 function doGameOver(){
   pkStop();
   if(typeof awardRun==='function')awardRun();
-  if(score>0&&qualifies(score)){
-    if(IS_TOUCH){const nm=prompt('NEW HIGH SCORE!  Enter your callsign:','ACE');saveScore(nm);state='gameover';}
-    else{beginEntry();state='entry';}
-  } else state='gameover';
+  state='gameover';
+  if(score>0&&qualifies(score)&&typeof showNameEntry==='function')showNameEntry();
 }
 
 /* ───────────── UPDATE ───────────── */
@@ -1310,6 +1321,18 @@ setMute(MUTED);
 if(!P.seenTut)$('#tutorial').classList.remove('hidden');
 $('#tutClose').onclick=()=>{$('#tutorial').classList.add('hidden');P.seenTut=true;persist();};
 (function(){const t=new Date().toDateString();if(P.lastDaily!==t){const amt=150+(P.level||1)*10;P.credits+=amt;P.lastDaily=t;persist();setTimeout(()=>{updateTop&&updateTop();toast('🎁 Daily reward +'+fmt(amt)+' ◈');},600);}})();
+
+/* name entry (replaces prompt — works on mobile keyboards) */
+function showNameEntry(){const m=$('#nameModal');if(!m)return;$('#nmScore').textContent='Score '+fmt(score);$('#nmInput').value='';m.classList.remove('hidden');setTimeout(()=>{try{$('#nmInput').focus();}catch(e){}},60);}
+function submitName(){saveScore($('#nmInput').value||'ACE');$('#nameModal').classList.add('hidden');renderBoard();}
+window.showNameEntry=showNameEntry;
+$('#nmSave').onclick=submitName;
+$('#nmInput').addEventListener('keydown',e=>{if(e.code==='Enter'){e.preventDefault();submitName();}});
+
+/* loading screen → Poki gameLoadingFinished when ready */
+(function(){const f=$('#ldrFill');if(f)f.style.width='100%';
+  setTimeout(()=>{const l=$('#loader');if(l)l.style.display='none';
+    try{const s=window.PokiSDK;if(s&&s.gameLoadingFinished)s.gameLoadingFinished();}catch(e){}},650);})();
 
 renderAll();
 </script>
