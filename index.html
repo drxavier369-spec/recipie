@@ -771,8 +771,8 @@ function fire(){
   let baseCd;
   // ── base pattern from the EQUIPPED weapon (always) ──
   if(w==='spread'){baseCd=15;sfx.triple();mk(gunL,0,tint||'#5cf0ff');mk(gunR,0,tint||'#5cf0ff');mk(player.x,-3,tint||'#5cf0ff');mk(player.x,3,tint||'#5cf0ff');mk(player.x,0,tint||'#5cf0ff');}
-  else if(w==='rail'){baseCd=20;sfx.shoot();mk(player.x,0,tint||'#caa6ff',26,3,3);}
-  else if(w==='plasma'){baseCd=6;sfx.rapid();mk(player.x,0,tint||'#b15cff',18,1,0.9);}
+  else if(w==='rail'){baseCd=20;sfx.shoot();mk(player.x,0,tint||'#caa6ff',30,6,6);}
+  else if(w==='plasma'){baseCd=5;sfx.rapid();mk(player.x-5,0,tint||'#d08bff',20,2,1.5);mk(player.x+5,0,tint||'#d08bff',20,2,1.5);}
   else if(w==='homer'){baseCd=16;sfx.homing();[gunL,gunR].forEach(gx=>missiles.push({x:gx,y:gy,vx:0,vy:-7,ang:-Math.PI/2,t:0,dmg:2*dm}));}
   else{baseCd=13;sfx.shoot();mk(gunL,0,tint||'#5cf0ff');mk(gunR,0,tint||'#5cf0ff');}
   // ── power-ups ENHANCE on top, never replace ──
