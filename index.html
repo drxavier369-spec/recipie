@@ -347,9 +347,68 @@ const layers=[[],[],[]],layerSpd=[0.35,0.8,1.6],layerSz=[[0.4,1],[0.8,1.6],[1.4,
 for(let L=0;L<3;L++)for(let i=0;i<70;i++)layers[L].push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*(layerSz[L][1]-layerSz[L][0])+layerSz[L][0],tw:Math.random()*Math.PI*2});
 const nebula=[];for(let i=0;i<5;i++)nebula.push({x:Math.random()*W,y:Math.random()*H,r:120+Math.random()*140,c:['#2a0d4d','#0d2a4d','#0d4d33','#4d2810','#3a0d4d'][i%5],vy:0.1+Math.random()*0.15});
 const planets=[];
-const PLANET_C=[['#5a4aa8','#1a1040'],['#a85a4a','#3a1810'],['#3a8a6a','#10302a'],['#7a4a6a','#2a1028'],['#4a6aa8','#101a3a']];
-for(let i=0;i<2;i++){const c=PLANET_C[Math.floor(Math.random()*PLANET_C.length)];planets.push({x:Math.random()*W,y:Math.random()*H,r:38+Math.random()*52,c0:c[0],c1:c[1],vy:0.05+Math.random()*0.06,ring:Math.random()<0.5});}
+(function(){
+  const R=(a,b)=>a+Math.random()*(b-a);
+  const PAL={
+    gas:[['#f3ddb0','#e0a85a','#a8622a','#4a2a0e'],['#d6e6ff','#86aae6','#3f60ad','#16284f'],['#f0cce8','#c585b8','#7a4070','#321530']],
+    rocky:[['#d2b298','#9a7258','#583a2a','#241410'],['#bcc4cc','#828b98','#474e5a','#1d2128']],
+    ice:[['#eef8ff','#aed4f4','#5e95cc','#264870']]
+  };
+  function mk(big){
+    const type=big?'gas':(Math.random()<0.5?'rocky':'ice');
+    const arr=PAL[type],pal=arr[Math.floor(Math.random()*arr.length)];
+    const r=big?R(72,96):R(34,52);
+    const p={type,pal,r,x:R(r,W-r),y:R(-H*0.4,H*0.5),vy:0.035+Math.random()*0.045,
+      ring:big&&Math.random()<0.85,ringTilt:R(0.2,0.4),ringHue:pal[1],
+      spotX:R(-0.3,0.3),spotY:R(-0.15,0.3),bands:[],craters:[]};
+    for(let i=0;i<7;i++)p.bands.push({off:R(-0.85,0.85),h:R(0.05,0.15),shade:R(-0.2,0.2)});
+    for(let i=0;i<8;i++){const a=R(0,6.28),d=Math.sqrt(Math.random())*0.82;p.craters.push({x:Math.cos(a)*d,y:Math.sin(a)*d,r:R(0.05,0.17)});}
+    return p;
+  }
+  planets.push(mk(true));planets.push(mk(false));
+})();
 let shootStars=[],bgT=0;
+/* ── procedural planet renderer ── */
+function _hx(h){h=h.replace('#','');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
+function _rgba(h,a){const c=_hx(h);return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';}
+function _shade(h,amt){const c=_hx(h),f=amt<0?0:255,t=Math.abs(amt);return 'rgb('+Math.round(c[0]+(f-c[0])*t)+','+Math.round(c[1]+(f-c[1])*t)+','+Math.round(c[2]+(f-c[2])*t)+')';}
+function _light(h){return _shade(h,0.45);}
+function drawRings(p,behind){
+  const r=p.r;ctx.save();ctx.translate(p.x,p.y);ctx.scale(1,p.ringTilt);
+  ctx.beginPath();behind?ctx.rect(-r*3,-r*3,r*6,r*3):ctx.rect(-r*3,0,r*6,r*3);ctx.clip();
+  const g=ctx.createRadialGradient(0,0,r*1.25,0,0,r*2.15);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(0.14,_rgba(p.ringHue,0.5));g.addColorStop(0.34,_rgba(_light(p.ringHue),0.62));
+  g.addColorStop(0.48,'rgba(0,0,0,0)');g.addColorStop(0.6,_rgba(p.ringHue,0.42));g.addColorStop(0.86,_rgba(p.ringHue,0.14));g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r*2.15,0,6.28);ctx.fill();ctx.restore();
+}
+function drawPlanet(p){
+  p.y+=p.vy;if(p.y-p.r*2.2>H){p.y=-p.r*2.2;p.x=rnd(p.r,W-p.r);}
+  const x=p.x,y=p.y,r=p.r,pal=p.pal,lx=-0.4,ly=-0.4;
+  const halo=ctx.createRadialGradient(x,y,r*0.92,x,y,r*1.45);
+  halo.addColorStop(0,'rgba(0,0,0,0)');halo.addColorStop(0.5,_rgba(p.type==='ice'?'#bfe0ff':pal[1],0.16));halo.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(x,y,r*1.45,0,6.28);ctx.fill();
+  if(p.ring)drawRings(p,true);
+  const base=ctx.createRadialGradient(x+lx*r,y+ly*r,r*0.08,x,y,r);
+  base.addColorStop(0,pal[0]);base.addColorStop(0.45,pal[1]);base.addColorStop(0.82,pal[2]);base.addColorStop(1,pal[3]);
+  ctx.fillStyle=base;ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.fill();
+  ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.clip();
+  if(p.type==='gas'||p.type==='ice'){
+    for(const b of p.bands){ctx.globalAlpha=0.45;ctx.fillStyle=_shade(pal[2],b.shade);ctx.beginPath();ctx.ellipse(x,y+b.off*r,r*1.05,b.h*r,0,0,6.28);ctx.fill();}
+    ctx.globalAlpha=1;
+    if(p.type==='gas'){ctx.globalAlpha=0.7;ctx.fillStyle=_shade(pal[1],0.22);ctx.beginPath();ctx.ellipse(x+p.spotX*r,y+p.spotY*r,r*0.2,r*0.12,0,0,6.28);ctx.fill();ctx.globalAlpha=1;}
+  } else {
+    for(const c of p.craters){const cx=x+c.x*r,cy=y+c.y*r,cr=c.r*r;
+      ctx.fillStyle=_shade(pal[2],-0.18);ctx.beginPath();ctx.arc(cx,cy,cr,0,6.28);ctx.fill();
+      ctx.fillStyle=_shade(pal[1],0.12);ctx.beginPath();ctx.arc(cx-cr*0.22,cy-cr*0.22,cr*0.72,0,6.28);ctx.fill();}
+  }
+  const term=ctx.createRadialGradient(x+lx*r,y+ly*r,r*0.25,x-lx*r*0.6,y-ly*r*0.6,r*1.5);
+  term.addColorStop(0,'rgba(0,0,0,0)');term.addColorStop(0.5,'rgba(0,0,0,0)');term.addColorStop(1,'rgba(2,3,10,0.85)');
+  ctx.fillStyle=term;ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle=_rgba(_light(pal[0]),0.45);ctx.lineWidth=Math.max(1.2,r*0.045);
+  ctx.beginPath();ctx.arc(x,y,r-ctx.lineWidth*0.4,Math.PI*1.04,Math.PI*1.72);ctx.stroke();
+  if(p.ring)drawRings(p,false);
+}
 function paintSpace(){
   bgT+=0.01;
   const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#070825');bg.addColorStop(0.5,'#0a0820');bg.addColorStop(1,'#040310');
@@ -363,13 +422,7 @@ function paintSpace(){
   for(const n of nebula){const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);g.addColorStop(0,n.c);g.addColorStop(1,'transparent');ctx.globalAlpha=0.55;ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,6.28);ctx.fill();}
   ctx.globalAlpha=1;
   // planets
-  for(const p of planets){p.y+=p.vy;if(p.y-p.r>H){p.y=-p.r;p.x=Math.random()*W;}
-    if(p.ring){ctx.strokeStyle='rgba(190,170,230,0.22)';ctx.lineWidth=p.r*0.12;ctx.save();ctx.translate(p.x,p.y);ctx.scale(1,0.34);ctx.beginPath();ctx.arc(0,0,p.r*1.55,0,6.28);ctx.stroke();ctx.restore();}
-    const g=ctx.createRadialGradient(p.x-p.r*0.35,p.y-p.r*0.35,p.r*0.1,p.x,p.y,p.r);
-    g.addColorStop(0,p.c0);g.addColorStop(1,p.c1);
-    ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.28);ctx.fill();
-    ctx.fillStyle='rgba(0,0,0,0.32)';ctx.beginPath();ctx.arc(p.x+p.r*0.4,p.y,p.r,0,6.28);ctx.fill();
-  }
+  for(const p of planets)drawPlanet(p);
   // parallax stars
   for(let L=0;L<3;L++)for(const s of layers[L]){const tw=0.55+Math.sin(s.tw)*0.45;ctx.fillStyle=`rgba(212,224,255,${layerA[L]*tw})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.28);ctx.fill();}
   // shooting stars
