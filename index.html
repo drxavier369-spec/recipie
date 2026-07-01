@@ -809,9 +809,6 @@ function drawShip(x,y,bank,inv,thrust){
   ctx.fillStyle=`rgba(0,255,180,${0.6+Math.sin(t*8)*0.4})`;
   ctx.beginPath();ctx.arc(-24,15,2,0,6.28);ctx.fill();ctx.beginPath();ctx.arc(24,15,2,0,6.28);ctx.fill();
 
-  /* weapon mounts — reflect the equipped weapon */
-  drawWeapon((LO&&LO.weapon)||(P.equip&&P.equip.weapon)||'twin',t);
-
   /* main fuselage */
   const sc=skinColors();
   const hull=ctx.createLinearGradient(-14,-24,14,20);
@@ -826,6 +823,9 @@ function drawShip(x,y,bank,inv,thrust){
   ctx.lineTo(-10,8);
   ctx.bezierCurveTo(-11,-4,-8,-18,0,-26);
   ctx.closePath();ctx.fill();ctx.stroke();
+
+  /* weapon mounts — drawn ON TOP of the hull so they're clearly visible */
+  drawWeapon((LO&&LO.weapon)||(P.equip&&P.equip.weapon)||'twin',t);
 
   /* central spine highlight */
   const spine=ctx.createLinearGradient(0,-24,0,16);
