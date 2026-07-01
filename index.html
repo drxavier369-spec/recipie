@@ -749,6 +749,40 @@ function enterStage(){
 function nextStage(){tier++;enterStage();}
 
 /* ───────────── PLAYER SHIP (detailed interceptor) ───────────── */
+function drawWeapon(w,t){
+  const glow=c=>{ctx.shadowColor=c;ctx.shadowBlur=8;};
+  if(w==='rail'){
+    ctx.fillStyle='#7a5aa8';ctx.fillRect(-4,-32,8,28);
+    ctx.fillStyle='#b9a0ee';ctx.fillRect(-2.5,-32,5,28);
+    ctx.fillStyle='#e0d0ff';for(let i=0;i<3;i++)ctx.fillRect(-6,-28+i*8,12,2.5);
+    ctx.fillStyle=`rgba(180,120,255,${0.6+Math.sin(t*10)*0.4})`;glow('#b15cff');ctx.beginPath();ctx.arc(0,-32,3.6,0,6.28);ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='#8aa0d8';ctx.fillRect(-15,-14,3,14);ctx.fillRect(12,-14,3,14);return;
+  }
+  if(w==='plasma'){
+    for(const ex of[-15,12]){
+      ctx.fillStyle='#5a2a8a';ctx.fillRect(ex,-20,5,22);
+      ctx.fillStyle='#b15cff';ctx.fillRect(ex+1,-20,3,22);
+      ctx.fillStyle=`rgba(205,120,255,${0.7+Math.sin(t*12+ex)*0.3})`;glow('#c050ff');ctx.beginPath();ctx.arc(ex+2.5,-21,4,0,6.28);ctx.fill();ctx.shadowBlur=0;
+    }return;
+  }
+  if(w==='homer'){
+    for(const ex of[-18,11]){
+      ctx.fillStyle='#8a5a20';ctx.fillRect(ex,-16,7,18);
+      ctx.fillStyle='#d89030';ctx.fillRect(ex+0.5,-16,6,4);
+      ctx.fillStyle='#3a2408';ctx.beginPath();ctx.arc(ex+2,-14,1.4,0,6.28);ctx.arc(ex+5,-14,1.4,0,6.28);ctx.fill();
+      ctx.fillStyle=`rgba(255,150,60,${0.6+Math.sin(t*9)*0.3})`;ctx.fillRect(ex+1,-16.5,5,1.6);
+    }return;
+  }
+  if(w==='spread'){
+    ctx.fillStyle='#c9d6ff';ctx.fillRect(-15,-18,4,20);ctx.fillRect(11,-18,4,20);
+    ctx.fillStyle='#8aa0d8';ctx.fillRect(-14.5,-18,1.5,20);ctx.fillRect(11.5,-18,1.5,20);
+    for(const s of[-1,1]){ctx.save();ctx.translate(s*18,-6);ctx.rotate(s*0.35);ctx.fillStyle='#aebfff';ctx.fillRect(-2,-14,4,16);ctx.fillStyle='#5cf0ff';ctx.fillRect(-1.5,-14,3,3);ctx.restore();}
+    ctx.fillStyle='#5cf0ff';ctx.fillRect(-14.5,-19,3,2);ctx.fillRect(11.5,-19,3,2);return;
+  }
+  ctx.fillStyle='#c9d6ff';ctx.fillRect(-17,-18,4.5,20);ctx.fillRect(12.5,-18,4.5,20);
+  ctx.fillStyle='#8aa0d8';ctx.fillRect(-16.5,-18,1.5,20);ctx.fillRect(13,-18,1.5,20);
+  ctx.fillStyle='#5cf0ff';ctx.fillRect(-16.5,-19,3.5,2);ctx.fillRect(13,-19,3.5,2);
+}
 function drawShip(x,y,bank,inv,thrust){
   if(inv>0&&Math.floor(inv/5)%2===0)return;
   const t=performance.now()/1000;
@@ -775,10 +809,8 @@ function drawShip(x,y,bank,inv,thrust){
   ctx.fillStyle=`rgba(0,255,180,${0.6+Math.sin(t*8)*0.4})`;
   ctx.beginPath();ctx.arc(-24,15,2,0,6.28);ctx.fill();ctx.beginPath();ctx.arc(24,15,2,0,6.28);ctx.fill();
 
-  /* twin cannons */
-  ctx.fillStyle='#c9d6ff';ctx.fillRect(-17,-18,4.5,20);ctx.fillRect(12.5,-18,4.5,20);
-  ctx.fillStyle='#8aa0d8';ctx.fillRect(-16.5,-18,1.5,20);ctx.fillRect(13,-18,1.5,20);
-  ctx.fillStyle='#ff5577';ctx.fillRect(-16.5,-19,3.5,2);ctx.fillRect(13,-19,3.5,2);
+  /* weapon mounts — reflect the equipped weapon */
+  drawWeapon((LO&&LO.weapon)||(P.equip&&P.equip.weapon)||'twin',t);
 
   /* main fuselage */
   const sc=skinColors();
