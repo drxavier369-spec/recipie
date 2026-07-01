@@ -824,8 +824,9 @@ function drawShip(x,y,bank,inv,thrust){
   ctx.bezierCurveTo(-11,-4,-8,-18,0,-26);
   ctx.closePath();ctx.fill();ctx.stroke();
 
-  /* weapon mounts — drawn ON TOP of the hull so they're clearly visible */
-  drawWeapon((LO&&LO.weapon)||(P.equip&&P.equip.weapon)||'twin',t);
+  /* weapon mounts — drawn ON TOP of the hull so they're clearly visible.
+     On the home screen always reflect the current loadout (not a stale run's LO). */
+  drawWeapon((VIEW==='game'&&LO&&LO.weapon)||(P.equip&&P.equip.weapon)||'twin',t);
 
   /* central spine highlight */
   const spine=ctx.createLinearGradient(0,-24,0,16);
