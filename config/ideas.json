@@ -1,0 +1,23 @@
+[
+  {"category": "Android", "topic": "Turn any app icon into a shortcut on home screen without extra apps", "status": "unverified"},
+  {"category": "Android", "topic": "Use 'Guest mode' to hand your phone to someone without exposing your apps", "status": "unverified"},
+  {"category": "iPhone", "topic": "Back Tap gesture to launch any shortcut by tapping the back of the phone", "status": "unverified"},
+  {"category": "iPhone", "topic": "Magnifier app as a free flashlight with adjustable brightness and color filter", "status": "unverified"},
+  {"category": "Windows", "topic": "Win + Shift + S for instant screenshot with annotation, no extra app", "status": "unverified"},
+  {"category": "Windows", "topic": "Win + V opens clipboard history with multiple saved copies", "status": "unverified"},
+  {"category": "Chrome", "topic": "Type a search term, press Tab, then search inside that specific site directly from the address bar", "status": "unverified"},
+  {"category": "Chrome", "topic": "Right-click a tab to mute just that tab instead of closing it", "status": "unverified"},
+  {"category": "Google", "topic": "Use Google as a free timer or stopwatch by just typing 'set timer for 5 minutes'", "status": "unverified"},
+  {"category": "Google", "topic": "Reverse image search directly from the Google Photos app", "status": "unverified"},
+  {"category": "WhatsApp", "topic": "Mute a chat forever without leaving or blocking the group", "status": "unverified"},
+  {"category": "WhatsApp", "topic": "Star a message to find it instantly later instead of scrolling", "status": "unverified"},
+  {"category": "Website features", "topic": "Use view-source or reader mode to strip ads and read articles cleanly", "status": "unverified"},
+  {"category": "Keyboard shortcuts", "topic": "Ctrl+Shift+T reopens the last closed browser tab instantly", "status": "unverified"},
+  {"category": "Hidden smartphone features", "topic": "Use the phone's built-in document scanner inside the notes/files app", "status": "unverified"},
+  {"category": "AI tricks", "topic": "Ask an AI chatbot to summarize a long article link into 3 bullet points", "status": "unverified"},
+  {"category": "File/photo/document", "topic": "Compress a photo instantly before sending without a third-party app", "status": "unverified"},
+  {"category": "Privacy/security", "topic": "Turn on 'Hide my email' to sign up for things without giving your real address", "status": "unverified"},
+  {"category": "Time-saving", "topic": "Set a recurring alarm label so you know what each alarm is for at a glance", "status": "unverified"},
+  {"category": "Accessibility", "topic": "Use live caption to auto-caption any video or call in real time", "status": "unverified"},
+  {"category": "Lesser-known app features", "topic": "Use Spotify's sleep timer to auto-stop music after a set time", "status": "unverified"}
+]
