@@ -1,24 +1,802 @@
 [
-  {"category": "Android", "topic": "Turn any app icon into a shortcut on home screen without extra apps", "status": "unverified"},
-  {"category": "Android", "topic": "Use 'Guest mode' to hand your phone to someone without exposing your apps", "status": "unverified"},
-  {"category": "iPhone", "topic": "Back Tap gesture to launch any shortcut by tapping the back of the phone", "status": "unverified"},
-  {"category": "iPhone", "topic": "Magnifier app as a free flashlight with adjustable brightness and color filter", "status": "unverified"},
-  {"category": "Windows", "topic": "Win + Shift + S for instant screenshot with annotation, no extra app", "status": "unverified"},
-  {"category": "Windows", "topic": "Win + V opens clipboard history with multiple saved copies", "status": "unverified"},
-  {"category": "Chrome", "topic": "Type a search term, press Tab, then search inside that specific site directly from the address bar", "status": "unverified"},
-  {"category": "Chrome", "topic": "Right-click a tab to mute just that tab instead of closing it", "status": "unverified"},
-  {"category": "Google", "topic": "Use Google as a free timer or stopwatch by just typing 'set timer for 5 minutes'", "status": "unverified"},
-  {"category": "Google", "topic": "Reverse image search directly from the Google Photos app", "status": "unverified"},
-  {"category": "WhatsApp", "topic": "Mute a chat forever without leaving or blocking the group", "status": "unverified"},
-  {"category": "WhatsApp", "topic": "Star a message to find it instantly later instead of scrolling", "status": "unverified"},
-  {"category": "Website features", "topic": "Use view-source or reader mode to strip ads and read articles cleanly", "status": "unverified"},
-  {"category": "Keyboard shortcuts", "topic": "Ctrl+Shift+T reopens the last closed browser tab instantly", "status": "unverified"},
-  {"category": "Hidden smartphone features", "topic": "Use the phone's built-in document scanner inside the notes/files app", "status": "unverified"},
-  {"category": "AI tricks", "topic": "Ask an AI chatbot to summarize a long article link into 3 bullet points", "status": "unverified"},
-  {"category": "File/photo/document", "topic": "Compress a photo instantly before sending without a third-party app", "status": "unverified"},
-  {"category": "Privacy/security", "topic": "Turn on 'Hide my email' to sign up for things without giving your real address", "status": "unverified"},
-  {"category": "Time-saving", "topic": "Set a recurring alarm label so you know what each alarm is for at a glance", "status": "unverified"},
-  {"category": "Accessibility", "topic": "Use live caption to auto-caption any video or call in real time", "status": "unverified"},
-  {"category": "Lesser-known app features", "topic": "Use Spotify's sleep timer to auto-stop music after a set time", "status": "unverified"},
-  {"category": "Hidden smartphone features", "topic": "Scan a QR code directly from an existing screenshot or saved photo, not just live camera", "status": "unverified"}
+  {
+    "id": 1,
+    "category": "Smartphone",
+    "topic": "Copy text from a photo",
+    "status": "unverified",
+    "launch_day": 3,
+    "hook": "“You don't have to type this.”"
+  },
+  {
+    "id": 2,
+    "category": "Smartphone",
+    "topic": "Scan a document without a scanner",
+    "status": "unverified",
+    "launch_day": 8,
+    "hook": "“You don't need a scanner.”"
+  },
+  {
+    "id": 3,
+    "category": "Smartphone",
+    "topic": "Turn your phone into a magnifying glass",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 4,
+    "category": "Smartphone",
+    "topic": "Find your lost phone",
+    "status": "unverified",
+    "launch_day": 9,
+    "hook": "“Lost your phone? Use this.”"
+  },
+  {
+    "id": 5,
+    "category": "Smartphone",
+    "topic": "Share Wi-Fi using a QR code",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 6,
+    "category": "Smartphone",
+    "topic": "Scan a QR code from a screenshot",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 7,
+    "category": "Smartphone",
+    "topic": "Make your phone read text aloud",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 8,
+    "category": "Smartphone",
+    "topic": "Identify an object using your camera",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 9,
+    "category": "Smartphone",
+    "topic": "Identify a song playing nearby",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 10,
+    "category": "Smartphone",
+    "topic": "Search using your camera",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 11,
+    "category": "Smartphone",
+    "topic": "Turn on one-handed mode",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 12,
+    "category": "Smartphone",
+    "topic": "Quickly search what's on your screen",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 13,
+    "category": "Smartphone",
+    "topic": "Use your phone as a level",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 14,
+    "category": "Smartphone",
+    "topic": "Measure something with your phone",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 15,
+    "category": "Smartphone",
+    "topic": "Set a custom vibration pattern",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 16,
+    "category": "Smartphone",
+    "topic": "Pin an important app",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 17,
+    "category": "Smartphone",
+    "topic": "Create a QR code for Wi-Fi",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 18,
+    "category": "Smartphone",
+    "topic": "Quickly share a contact",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 19,
+    "category": "Smartphone",
+    "topic": "Use emergency information on your lock screen",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 20,
+    "category": "Smartphone",
+    "topic": "Find your phone's IMEI",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 21,
+    "category": "Smartphone",
+    "topic": "Set a timer quickly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 22,
+    "category": "Smartphone",
+    "topic": "Use voice typing",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 23,
+    "category": "Smartphone",
+    "topic": "Turn on Do Not Disturb quickly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 24,
+    "category": "Smartphone",
+    "topic": "Create a shortcut to a website",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 25,
+    "category": "Smartphone",
+    "topic": "Use split-screen apps",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 26,
+    "category": "Windows",
+    "topic": "Clipboard history — Win + V",
+    "status": "unverified",
+    "launch_day": 2,
+    "hook": "“Your PC remembers what you copied.”"
+  },
+  {
+    "id": 27,
+    "category": "Windows",
+    "topic": "Screenshot part of the screen",
+    "status": "unverified",
+    "launch_day": 4,
+    "hook": "“Stop screenshotting the whole screen.”"
+  },
+  {
+    "id": 28,
+    "category": "Windows",
+    "topic": "Instantly lock your PC",
+    "status": "unverified",
+    "launch_day": 10,
+    "hook": "“Leaving your PC? Press these keys.”"
+  },
+  {
+    "id": 29,
+    "category": "Windows",
+    "topic": "Reopen an accidentally closed window",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 30,
+    "category": "Windows",
+    "topic": "Open Task Manager quickly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 31,
+    "category": "Windows",
+    "topic": "Open the emoji keyboard",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 32,
+    "category": "Windows",
+    "topic": "Record your screen",
+    "status": "unverified",
+    "launch_day": 7,
+    "hook": "“You already have a screen recorder.”"
+  },
+  {
+    "id": 33,
+    "category": "Windows",
+    "topic": "Minimize every window",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 34,
+    "category": "Windows",
+    "topic": "Switch between apps quickly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 35,
+    "category": "Windows",
+    "topic": "Search your PC faster",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 36,
+    "category": "Windows",
+    "topic": "Open File Explorer instantly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 37,
+    "category": "Windows",
+    "topic": "Open the Run command",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 38,
+    "category": "Windows",
+    "topic": "Open Settings quickly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 39,
+    "category": "Windows",
+    "topic": "Take a full-screen screenshot",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 40,
+    "category": "Windows",
+    "topic": "Screenshot an active window",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 41,
+    "category": "Windows",
+    "topic": "Use virtual desktops",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 42,
+    "category": "Windows",
+    "topic": "Move a window between monitors",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 43,
+    "category": "Windows",
+    "topic": "Snap windows side-by-side",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 44,
+    "category": "Windows",
+    "topic": "Quickly rename a file",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 45,
+    "category": "Windows",
+    "topic": "Quickly create a new folder",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 46,
+    "category": "Windows",
+    "topic": "Show hidden file extensions",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 47,
+    "category": "Windows",
+    "topic": "Copy a file path instantly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 48,
+    "category": "Windows",
+    "topic": "Open Windows Search",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 49,
+    "category": "Windows",
+    "topic": "Quickly shut down Windows",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 50,
+    "category": "Windows",
+    "topic": "Use Windows voice typing",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 51,
+    "category": "Chrome",
+    "topic": "Reopen a closed tab",
+    "status": "unverified",
+    "launch_day": 1,
+    "hook": "“Accidentally closed a tab? Do THIS.”"
+  },
+  {
+    "id": 52,
+    "category": "Chrome",
+    "topic": "Search a word on a webpage",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 53,
+    "category": "Chrome",
+    "topic": "Search Google using an image",
+    "status": "unverified",
+    "launch_day": 6,
+    "hook": "“Stop describing what you're looking for.”"
+  },
+  {
+    "id": 54,
+    "category": "Chrome",
+    "topic": "Translate a webpage",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 55,
+    "category": "Chrome",
+    "topic": "Turn a website into an app",
+    "status": "unverified",
+    "launch_day": 5,
+    "hook": "“You can turn this website into an app.”"
+  },
+  {
+    "id": 56,
+    "category": "Chrome",
+    "topic": "Generate a QR code for a webpage",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 57,
+    "category": "Chrome",
+    "topic": "Bookmark a page instantly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 58,
+    "category": "Chrome",
+    "topic": "Open an incognito window",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 59,
+    "category": "Chrome",
+    "topic": "Search through open tabs",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 60,
+    "category": "Chrome",
+    "topic": "Duplicate a tab",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 61,
+    "category": "Chrome",
+    "topic": "Move a tab to another window",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 62,
+    "category": "Chrome",
+    "topic": "Pin an important tab",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 63,
+    "category": "Chrome",
+    "topic": "Mute a noisy tab",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 64,
+    "category": "Chrome",
+    "topic": "Restore your previous session",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 65,
+    "category": "Chrome",
+    "topic": "Save a webpage as PDF",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 66,
+    "category": "Chrome",
+    "topic": "Zoom a webpage",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 67,
+    "category": "Chrome",
+    "topic": "Change Chrome's default search engine",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 68,
+    "category": "Chrome",
+    "topic": "Clear browsing data quickly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 69,
+    "category": "Chrome",
+    "topic": "Open downloads instantly",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 70,
+    "category": "Chrome",
+    "topic": "Use Chrome's built-in password manager",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 71,
+    "category": "Google & Internet",
+    "topic": "Use Google as a calculator",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 72,
+    "category": "Google & Internet",
+    "topic": "Convert currencies with Google",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 73,
+    "category": "Google & Internet",
+    "topic": "Convert units with Google",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 74,
+    "category": "Google & Internet",
+    "topic": "Find the time anywhere in the world",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 75,
+    "category": "Google & Internet",
+    "topic": "Set a timer using Google",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 76,
+    "category": "Google & Internet",
+    "topic": "Search an exact phrase with quotation marks",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 77,
+    "category": "Google & Internet",
+    "topic": "Exclude a word from search results",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 78,
+    "category": "Google & Internet",
+    "topic": "Search only one website",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 79,
+    "category": "Google & Internet",
+    "topic": "Search for a specific file type",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 80,
+    "category": "Google & Internet",
+    "topic": "Search within a date range",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 81,
+    "category": "Google & Internet",
+    "topic": "Use Google Lens",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 82,
+    "category": "Google & Internet",
+    "topic": "Search by voice",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 83,
+    "category": "Google & Internet",
+    "topic": "Search for a specific image size",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 84,
+    "category": "Google & Internet",
+    "topic": "Find similar images",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 85,
+    "category": "Google & Internet",
+    "topic": "Search a website's cached/indexed content where available",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 86,
+    "category": "AI & Productivity",
+    "topic": "Turn a long paragraph into bullet points with ChatGPT",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 87,
+    "category": "AI & Productivity",
+    "topic": "Ask ChatGPT to explain something like you're a beginner",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 88,
+    "category": "AI & Productivity",
+    "topic": "Turn notes into a to-do list",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 89,
+    "category": "AI & Productivity",
+    "topic": "Summarize a long document",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 90,
+    "category": "AI & Productivity",
+    "topic": "Extract information from a screenshot",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 91,
+    "category": "AI & Productivity",
+    "topic": "Turn an email into a professional message",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 92,
+    "category": "AI & Productivity",
+    "topic": "Generate a spreadsheet formula with AI",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 93,
+    "category": "AI & Productivity",
+    "topic": "Ask AI to find mistakes in your writing",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 94,
+    "category": "AI & Productivity",
+    "topic": "Turn a list into a table",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 95,
+    "category": "AI & Productivity",
+    "topic": "Create a study quiz from notes",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 96,
+    "category": "AI & Productivity",
+    "topic": "Turn a meeting transcript into action items",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 97,
+    "category": "AI & Productivity",
+    "topic": "Ask AI to compare two products",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 98,
+    "category": "AI & Productivity",
+    "topic": "Turn a messy paragraph into a checklist",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 99,
+    "category": "AI & Productivity",
+    "topic": "Ask AI to create a 30-second presentation outline",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  },
+  {
+    "id": 100,
+    "category": "AI & Productivity",
+    "topic": "Use AI to brainstorm 20 ideas from one idea",
+    "status": "unverified",
+    "launch_day": null,
+    "hook": null
+  }
 ]

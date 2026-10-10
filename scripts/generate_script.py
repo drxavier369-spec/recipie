@@ -50,9 +50,12 @@ Return ONLY the JSON object, no markdown fences, no extra text.
 """
 
 
-def generate(topic: str, category: str) -> dict:
+def generate(topic: str, category: str, suggested_hook: str | None = None) -> dict:
     client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-    user_prompt = f"Category: {category}\nTrick idea: {topic}\n\nWrite the Short script JSON now."
+    user_prompt = f"Category: {category}\nTrick idea: {topic}\n"
+    if suggested_hook:
+        user_prompt += f"Suggested hook to use or adapt: {suggested_hook}\n"
+    user_prompt += "\nWrite the Short script JSON now."
     resp = client.messages.create(
         model="claude-sonnet-4-5",
         max_tokens=1500,
@@ -72,22 +75,39 @@ def main():
     parser.add_argument("--topic")
     parser.add_argument("--category", default="General")
     parser.add_argument("--from-ideas")
-    parser.add_argument("--index", type=int, default=0)
+    parser.add_argument("--index", type=int, default=None, help="Position in the ideas list")
+    parser.add_argument("--launch-day", type=int, default=None, help="Pick the idea with this launch_day")
+    parser.add_argument("--id", type=int, default=None, help="Pick the idea with this id")
     parser.add_argument("--out", default=None)
     args = parser.parse_args()
 
+    suggested_hook = None
     if args.from_ideas:
         with open(args.from_ideas) as f:
             ideas = json.load(f)
-        idea = ideas[args.index]
+        if args.launch_day is not None:
+            matches = [i for i in ideas if i.get("launch_day") == args.launch_day]
+            if not matches:
+                print(f"No idea with launch_day={args.launch_day}", file=sys.stderr)
+                sys.exit(1)
+            idea = matches[0]
+        elif args.id is not None:
+            matches = [i for i in ideas if i.get("id") == args.id]
+            if not matches:
+                print(f"No idea with id={args.id}", file=sys.stderr)
+                sys.exit(1)
+            idea = matches[0]
+        else:
+            idea = ideas[args.index or 0]
         topic, category = idea["topic"], idea["category"]
+        suggested_hook = idea.get("hook")
     elif args.topic:
         topic, category = args.topic, args.category
     else:
         print("Provide --topic or --from-ideas", file=sys.stderr)
         sys.exit(1)
 
-    script = generate(topic, category)
+    script = generate(topic, category, suggested_hook)
 
     if not script.get("verified", False):
         print(f"WARNING: trick marked NOT verified: {script.get('verification_note')}", file=sys.stderr)

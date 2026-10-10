@@ -20,7 +20,9 @@ def main():
     parser.add_argument("--topic")
     parser.add_argument("--category", default="General")
     parser.add_argument("--from-ideas")
-    parser.add_argument("--index", type=int, default=0)
+    parser.add_argument("--index", type=int, default=None)
+    parser.add_argument("--launch-day", type=int, default=None)
+    parser.add_argument("--id", type=int, default=None)
     parser.add_argument("--workdir", default="output")
     parser.add_argument("--upload", action="store_true")
     parser.add_argument("--privacy", default="private", choices=["private", "unlisted", "public"])
@@ -33,7 +35,13 @@ def main():
 
     gen_cmd = [sys.executable, "scripts/generate_script.py", "--out", script_path]
     if args.from_ideas:
-        gen_cmd += ["--from-ideas", args.from_ideas, "--index", str(args.index)]
+        gen_cmd += ["--from-ideas", args.from_ideas]
+        if args.launch_day is not None:
+            gen_cmd += ["--launch-day", str(args.launch_day)]
+        elif args.id is not None:
+            gen_cmd += ["--id", str(args.id)]
+        else:
+            gen_cmd += ["--index", str(args.index or 0)]
     elif args.topic:
         gen_cmd += ["--topic", args.topic, "--category", args.category]
     else:

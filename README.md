@@ -34,9 +34,12 @@ You also need `ffmpeg` and `ffprobe` on your PATH (`apt install ffmpeg` / `brew 
 
 ## Usage
 
-Generate and upload one video from the idea bank (as a private video, for review first):
+Generate and upload one video from the idea bank (as a private video, for review first).
+Pick an idea by its launch day, id, or plain list position:
 
 ```bash
+python scripts/pipeline.py --from-ideas config/ideas.json --launch-day 1 --upload --privacy private
+python scripts/pipeline.py --from-ideas config/ideas.json --id 6 --upload --privacy private
 python scripts/pipeline.py --from-ideas config/ideas.json --index 0 --upload --privacy private
 ```
 
@@ -58,13 +61,28 @@ Each stage can also be run standalone (`generate_script.py`, `tts.py`, `build_vi
 - Script length targets 20–40 seconds of spoken audio (~55–110 words).
 - No "hey guys welcome back" intros, no like/subscribe begging.
 
-## Growing the idea bank
+## The idea bank
 
-`config/ideas.json` is a seed list across the 15 priority categories (Android, iPhone,
-Windows, Chrome, Google, WhatsApp, websites, keyboard shortcuts, hidden smartphone features,
-AI tricks, files/photos, privacy, time-saving, accessibility, lesser-known app features).
-Add new entries as `{"category": "...", "topic": "...", "status": "unverified"}` and they're
-ready to run through the pipeline.
+`config/ideas.json` holds a 100-idea content calendar across five categories: Smartphone,
+Windows, Chrome, Google & Internet, and AI & Productivity. Each entry has:
+
+```json
+{"id": 1, "category": "Smartphone", "topic": "Copy text from a photo",
+ "status": "unverified", "launch_day": 3, "hook": "“You don't have to type this.”"}
+```
+
+`launch_day` and `hook` are only set for the first 10 videos — a deliberately small,
+high-confidence launch batch to test before committing to the full 100. Pick one by
+`--launch-day N`, `--id N`, or plain `--index N` (see Usage above). When a `hook` is set,
+it's passed to Claude as a suggested starting point, not a locked script. Add new entries
+as `{"category": "...", "topic": "...", "status": "unverified", "launch_day": null, "hook": null}`
+and they're ready to run through the pipeline.
+
+**Launch plan (days 1–10):** reopen a closed Chrome tab, Windows clipboard history, copy text
+from a photo, partial screenshot, turn a website into an app, Google image search, Windows
+screen recording, phone document scanner, find a lost phone, instantly lock Windows. Treat the
+other 90 as a backlog to pull from based on how these 10 perform — don't batch-produce all 100
+blind.
 
 ## Notes / limitations
 
