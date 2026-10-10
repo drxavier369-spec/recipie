@@ -19,5 +19,6 @@
   {"category": "Privacy/security", "topic": "Turn on 'Hide my email' to sign up for things without giving your real address", "status": "unverified"},
   {"category": "Time-saving", "topic": "Set a recurring alarm label so you know what each alarm is for at a glance", "status": "unverified"},
   {"category": "Accessibility", "topic": "Use live caption to auto-caption any video or call in real time", "status": "unverified"},
-  {"category": "Lesser-known app features", "topic": "Use Spotify's sleep timer to auto-stop music after a set time", "status": "unverified"}
+  {"category": "Lesser-known app features", "topic": "Use Spotify's sleep timer to auto-stop music after a set time", "status": "unverified"},
+  {"category": "Hidden smartphone features", "topic": "Scan a QR code directly from an existing screenshot or saved photo, not just live camera", "status": "unverified"}
 ]
